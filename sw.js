@@ -1,21 +1,28 @@
-const CACHE_NAME = 'shar8-v1';
-const assets = [
-  'shar8.html',
-  'data.json',
-  'manifest.json'
-];
+const CACHE_NAME = 'shar8-v4';
 
-self.addEventListener('install', e => {
+self.addEventListener('install', (e) => {
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', (e) => {
   e.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      return cache.addAll(assets);
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            return caches.delete(key);
+          }
+        })
+      );
+    }).then(() => {
+      return self.clients.claim();
     })
   );
 });
 
-self.addEventListener('fetch', e => {
+self.addEventListener('fetch', (e) => {
   e.respondWith(
-    caches.match(e.request).then(cachedResponse => {
+    caches.match(e.request).then((cachedResponse) => {
       return cachedResponse || fetch(e.request);
     })
   );
