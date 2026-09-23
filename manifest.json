@@ -1,0 +1,15 @@
+{
+  "name": "shar8 - منصة الدروس التعليمية",
+  "short_name": "shar8",
+  "start_url": "shar8.html",
+  "display": "standalone",
+  "background_color": "#f4f6fa",
+  "theme_color": "#2196f3",
+  "icons": [
+    {
+      "src": "https://www.image2url.com/r2/default/images/1790185966828-35d3808e-903e-48f9-8622-9f67ec12e351.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
