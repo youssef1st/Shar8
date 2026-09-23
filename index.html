@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>shar8</title>
+
+<!-- أيقونات المتصفح والموبايل -->
+<link rel="icon" href="https://www.image2url.com/r2/default/images/1790185966828-35d3808e-903e-48f9-8622-9f67ec12e351.png" type="image/png">
+<link rel="apple-touch-icon" href="https://www.image2url.com/r2/default/images/1790185966828-35d3808e-903e-48f9-8622-9f67ec12e351.png">
+<meta name="theme-color" content="#2196f3">
+
+<link rel="manifest" href="manifest.json">
+
+<style>
+:root {
+  --blue: #2196f3;
+  --blue-hover: #1976d2;
+  --red: #e53935;
+  --green: #22c55e;
+  --bg: #f4f6fa;
+  --card: #ffffff;
+  --text: #161616;
+  --muted: #6b7280;
+  --border: #e5e7eb;
+  --shadow: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] {
+  --bg: #0e0f12;
+  --card: #16181d;
+  --text: #f2f2f2;
+  --muted: #9aa0aa;
+  --border: #26292f;
+  --shadow: rgba(0, 0, 0, 0.3);
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: 'Tahoma', 'Segoe UI', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.3s, color 0.3s;
+}
+
+/* ---------- Splash Screen ---------- */
+#splash {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+#splash.hide {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+#splash img {
+  width: 110px;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+.dots { display: flex; gap: 6px; margin-top: 22px; }
+.dots span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--blue);
+  animation: blink 1s infinite ease-in-out;
+}
+.dots span:nth-child(2) { animation-delay: 0.15s; }
+.dots span:nth-child(3) { animation-delay: 0.30s; }
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0.2; }
+  40% { opacity: 1; }
+}
+
+/* ---------- Layout & Header ---------- */
+#app { display: none; min-height: 100vh; flex-direction: column; }
+header.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+header.top img { height: 32px; cursor: pointer; }
+.header-right { display: flex; align-items: center; gap: 10px; }
+.iconbtn {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  color: var(--text);
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.2s;
+}
+.iconbtn:hover { background: var(--border); }
+.pill {
+  background: var(--blue);
+  color: #fff;
+  font-weight: 700;
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+.progress-outer { height: 4px; background: var(--border); width: 100%; }
+.progress-inner { height: 100%; background: var(--blue); width: 0%; transition: width 0.4s ease; }
+
+/* ---------- Home View ---------- */
+#home {
+  max-width: 760px;
+  margin: 60px auto;
+  padding: 0 16px;
+  text-align: center;
+}
+#home img { width: 100px; margin-bottom: 16px; }
+#home h1 { font-size: 28px; margin-bottom: 8px; font-weight: 800; }
+#home p { color: var(--muted); margin-bottom: 36px; font-size: 15px; }
+.subject-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+.subject-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 32px 20px;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 4px 12px var(--shadow);
+}
+.subject-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(33, 150, 243, 0.15);
+  border-color: var(--blue);
+}
+.subject-card .emoji { font-size: 46px; margin-bottom: 12px; }
+.subject-card h3 { margin: 8px 0 4px; font-size: 18px; }
+.subject-card span { color: var(--muted); font-size: 13px; }
+
+/* ---------- Course View ---------- */
+#course {
+  display: none;
+  grid-template-columns: 1fr 340px;
+  gap: 0;
+  max-width: 1350px;
+  margin: 0 auto;
+  width: 100%;
+}
+@media(max-width: 880px) {
+  #course { grid-template-columns: 1fr; }
+  aside.side { display: none; }
+  aside.side.mobile-open { display: block; position: fixed; inset: 0; z-index: 200; overflow-y: auto; }
+}
+
+main.content { padding: 24px; }
+.back {
+  background: none;
+  border: none;
+  color: var(--blue);
+  cursor: pointer;
+  font-weight: 700;
+  margin-bottom: 16px;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0;
+}
+.back:hover { text-decoration: underline; }
+
+.video-box {
+  background: #000;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  aspect-ratio: 16/9;
+  box-shadow: 0 8px 24px var(--shadow);
+}
+.video-box iframe { width: 100%; height: 100%; border: 0; display: block; }
+
+.video-title { font-size: 19px; font-weight: 800; margin-top: 16px; }
+
+.nav-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.navbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  transition: 0.2s;
+}
+.navbtn:hover { background: var(--bg); border-color: var(--blue); }
+.completedbtn {
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  padding: 10px 24px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+.completedbtn:hover { background: var(--blue-hover); }
+.completedbtn.done { background: var(--green); }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  margin-top: 20px;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+.card h4 { margin: 0 0 12px; font-size: 16px; color: var(--blue); display: flex; align-items: center; gap: 8px; }
+
+/* ---------- Activity / Quiz Card ---------- */
+.activity { border-inline-start: 4px solid var(--red); }
+.activity h4 { color: var(--red); }
+.q-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--border);
+  font-size: 14px;
+  gap: 12px;
+}
+.q-row:last-of-type { border-bottom: none; }
+.q-opts label { margin-inline-start: 12px; cursor: pointer; font-weight: 600; }
+.checkbtn {
+  margin-top: 14px;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.checkbtn:hover { background: var(--blue-hover); }
+.result { font-size: 14px; margin-top: 12px; font-weight: 700; }
+
+/* ---------- Sidebar ---------- */
+aside.side {
+  border-inline-start: 1px solid var(--border);
+  padding: 20px;
+  background: var(--card);
+  min-height: calc(100vh - 60px);
+}
+.course-title { font-weight: 800; margin-bottom: 18px; font-size: 16px; color: var(--text); }
+.unit { border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; overflow: hidden; background: var(--bg); }
+.unit-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  user-select: none;
+  background: var(--card);
+}
+.unit-lessons { display: none; }
+.unit.open .unit-lessons { display: block; }
+.unit.open .chev { transform: rotate(45deg); }
+.chev { transition: transform 0.2s; color: var(--blue); font-weight: 900; font-size: 16px; }
+
+.lesson-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  border-top: 1px solid var(--border);
+  transition: background 0.15s;
+}
+.lesson-item:hover { background: var(--card); }
+.lesson-item.active { color: var(--blue); font-weight: 700; background: rgba(33, 150, 243, 0.08); }
+.lesson-item .num { color: var(--muted); font-size: 12px; }
+</style>
+</head>
+<body>
+
+<!-- Splash Screen -->
+<div id="splash">
+  <img src="https://www.image2url.com/r2/default/images/1790185966828-35d3808e-903e-48f9-8622-9f67ec12e351.png" alt="shar8">
+  <div class="dots"><span></span><span></span><span></span></div>
+</div>
+
+<!-- Main App -->
+<div id="app">
+  <header class="top">
+    <div class="header-right">
+      <button class="iconbtn" onclick="toggleTheme()" title="تبديل الوضع">🌓</button>
+      <button class="iconbtn" onclick="toggleMobileSide()" title="القائمة الجانبية" style="display:none;" id="mobileMenuBtn">☰</button>
+      <span id="progLabel" style="font-size:13px;color:var(--muted);"></span>
+    </div>
+    <div class="pill" id="progPill">COMPLETE 0%</div>
+    <img src="https://www.image2url.com/r2/default/images/1790185966828-35d3808e-903e-48f9-8622-9f67ec12e351.png" alt="shar8" onclick="goHome()">
+  </header>
+  <div class="progress-outer"><div class="progress-inner" id="progBar"></div></div>
+
+  <!-- Home View -->
+  <div id="home">
+    <img src="https://www.image2url.com/r2/default/images/1790185966828-35d3808e-903e-48f9-8622-9f67ec12e351.png" alt="shar8">
+    <h1>اختار المادة</h1>
+    <p>ابدأ درسك دلوقتي وتابع إنجازك خطوة بخطوة</p>
+    <div class="subject-grid">
+      <div class="subject-card" onclick="openCourse('math')">
+        <div class="emoji">📐</div>
+        <h3>Math (Prep 2)</h3>
+        <span>تانية إعدادي ترم أول 2027</span>
+      </div>
+      <div class="subject-card" onclick="openCourse('science')">
+        <div class="emoji">🧪</div>
+        <h3>Science (Prep 2)</h3>
+        <span>تانية إعدادي ترم أول</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Course View -->
+  <div id="course">
+    <main class="content">
+      <button class="back" onclick="goHome()">← رجوع للمواد</button>
+      
+      <div class="video-box">
+        <iframe id="vFrame" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+      </div>
+      
+      <div class="video-title" id="vTitle"></div>
+      
+      <div class="nav-row">
+        <button class="navbtn" onclick="stepLesson(-1)">‹ الدرس السابق</button>
+        <button class="completedbtn" id="doneBtn" onclick="toggleDone()">تم الإكمال ✓</button>
+        <button class="navbtn" onclick="stepLesson(1)">الدرس التالي ›</button>
+      </div>
+
+      <!-- Summary Card -->
+      <div class="card">
+        <h4>📝 ملخص الدرس</h4>
+        <p id="summaryText" style="font-size:14px;line-height:1.8;color:var(--muted);margin:0;"></p>
+      </div>
+
+      <!-- Quiz Card -->
+      <div class="card activity">
+        <h4>نشاط تفاعلي</h4>
+        <p style="font-size:13px;color:var(--muted);margin-top:-6px;">ضع علامة (✓) أو (✗):</p>
+        <div class="q-row">
+          <span>1. هل قمت بفهم أفكار هذا الجزء من الشرح جلياً؟</span>
+          <span class="q-opts">
+            <label><input type="radio" name="q1" value="true"> ✓</label>
+            <label><input type="radio" name="q1" value="false"> ✗</label>
+          </span>
+        </div>
+        <div class="q-row">
+          <span>2. هل تدربت على حل المسائل/التطبيقات الخاصة بالدرس؟</span>
+          <span class="q-opts">
+            <label><input type="radio" name="q2" value="true"> ✓</label>
+            <label><input type="radio" name="q2" value="false"> ✗</label>
+          </span>
+        </div>
+        <button class="checkbtn" onclick="checkAnswers()">تحقق من إجابتك</button>
+        <div class="result" id="result"></div>
+      </div>
+    </main>
+
+    <!-- Sidebar -->
+    <aside class="side" id="sidebar">
+      <div class="course-title" id="sideCourseTitle">الصف الثاني الإعدادي</div>
+      <div id="unitsWrap"></div>
+    </aside>
+  </div>
+</div>
+
+<script>
+// --- Data Structures ---
+const unitsMath = [
+  { name: 'Unit 1: Real Numbers & Intervals', lessons: [
+    ['فيديو تعريفي: المنهج الجديد + طريقة المذاكرة الصح | مستر طلعت الغيطي', 'DwdFxnUhLfU'],
+    ['Prep 2 Math | Real Numbers | حل المعاصر | Unit 1 Lesson 1 ( Part 1 )', 'TI7rP5JGsyI'],
+    ['Prep 2 Math | Real Numbers | حل المعاصر | Unit 1 Lesson 1 ( Part 2 )', 'qLUOpyQS6SY'],
+    ['Prep 2 Math | Real Numbers | حل المعاصر | Unit 1 Lesson 1 ( Part 3 )', '7El_PdJ80cI'],
+    ['Prep 2 Math | Real Numbers | حل المعاصر | Unit 1 Lesson 1 ( Part 4 )', 'SLtjyIjBdRE'],
+    ['Prep 2 Math | Real Numbers | حل المعاصر | Unit 1 Lesson 1 ( Part 5 )', '3LKY3bweKGY'],
+    ['Prep 2 Math | Intervals | حل المعاصر | Unit 1 Lesson 2 ( Part 1 )', 'Wym_V9dft4c'],
+    ['Prep 2 Math | Intervals | حل المعاصر | Unit 1 Lesson 2 ( Part 2 )', 'A8NrS18sEbs'],
+    ['Prep 2 Math | Intervals | حل المعاصر | Unit 1 Lesson 2 ( Part 3 )', 'AtHV5-h-zQY'],
+    ['Prep 2 Math | Intervals | حل المعاصر | Unit 1 Lesson 2 ( Part 4 )', 'v1Oyn7EuJzo'],
+    ['Prep 2 Math | Intervals | حل المعاصر | Unit 1 Lesson 2 ( Part 5 )', 'Xmk69LzcanU'],
+    ['Prep 2 Math | Operations on Real Numbers | حل المعاصر | Unit 1 Lesson 3 ( Part 1 )', '5MGiX8G_1vg'],
+    ['Prep 2 Math | Operations on Real Numbers | حل المعاصر | Unit 1 Lesson 3 ( Part 2 )', 'nK0UMYeuMVY'],
+    ['Prep 2 Math | Operations on Real Numbers | حل المعاصر | Unit 1 Lesson 3 ( Part 3 )', 'IDTdbU7Al7s'],
+    ['Prep 2 Math | Operations on Real Numbers | حل المعاصر | Unit 1 Lesson 3 ( Part 4 )', 'i5srF7I0WUc'],
+    ['Prep 2 Math | Operations on Real Numbers | حل المعاصر | Unit 1 Lesson 3 ( Part 5 )', '4uOgdknn3VE'],
+    ['Prep 2 Math | Operations on Real Numbers | حل المعاصر | Unit 1 Lesson 3 ( Part 6 )', 'oFWv5mf88Kg'],
+    ['Prep 2 Math | Operations on Real Numbers | حل المعاصر | Unit 1 Lesson 3 ( Part 7 )', '2DZkguJSJGg'],
+    ['Prep 2 Math | Laws of Square and Cube Roots | حل المعاصر | Unit 1 Lesson 4 ( Part 1 )', 'xgYqGkApF-Q'],
+    ['Prep 2 Math | Laws of Square and Cube Roots | حل المعاصر | Unit 1 Lesson 4 ( Part 2 )', 'o6DuFjAwn90'],
+    ['Prep 2 Math | Laws of Square and Cube Roots | حل المعاصر | Unit 1 Lesson 4 ( Part 3 )', '_-vJJM7he-Y'],
+    ['Prep 2 Math | Laws of Square and Cube Roots | حل المعاصر | Unit 1 Lesson 4 ( Part 4 )', 'MMBlra72oPE'],
+    ['Prep 2 Math | Laws of Square and Cube Roots | حل المعاصر | Unit 1 Lesson 4 ( Part 5 )', '2Mj3wgZCPn4'],
+    ['Prep 2 Math | Laws of Square and Cube Roots | حل المعاصر | Unit 1 Lesson 4 ( Part 6 )', '4hbQxVZd8lQ'],
+    ['Prep 2 Math | Laws of Square and Cube Roots | حل المعاصر | Unit 1 Lesson 4 ( Part 7 )', 'gPUjiZhjVO0'],
+    ['Prep 2 Math | Laws of Square and Cube Roots | حل المعاصر | Unit 1 Lesson 4 ( Part 8 )', '5vOfPNHbzM0'],
+    ['Prep 2 Math | Lesson 5 ( Part 1 ) Laws of Exponents | حل المعاصر', 'Sy4gZPG0Wc8'],
+    ['Prep 2 Math | Lesson 5 ( Part 2 ) Laws of Exponents | حل المعاصر', 's07zTIq0Qus'],
+    ['Prep 2 Math | Lesson 5 ( Part 3 ) Laws of Exponents | حل المعاصر', 'woCPAkK7Rmk'],
+    ['Prep 2 Math | Lesson 5 ( Part 4 ) Laws of Exponents | حل المعاصر', 'znmvZp8mkl8'],
+    ['Prep 2 Math | Lesson 5 ( Part 5 ) Laws of Exponents | حل المعاصر', '3ZzpoYEoPoc']
+  ]}
+];
+
+const unitsScience = [
+  { name: 'Unit 1: Matter & Energy', lessons: [
+    ['Prep.2 | States of Matter | Unit 1 - Lesson 1', 'wt1o2LPp2pw'],
+    ['Prep.2 | Exercise | States of Matter | Unit 1 - Lesson 1', 'baQX7VSb4M4'],
+    ['Prep.2 | Changes in the States of Matter | Unit 1 - Lesson 2', 'BirK2UYP-DY'],
+    ['Prep.2 | حل كتاب الوزارة + المعاصر | Changes in the States of Matter | Unit 1 - Lesson 2', 'kCSUmF1xEPU'],
+    ['Prep.2 | Internal Energy and Temperature | Unit 1 - Lesson 3', 'gOThQafxtqE'],
+    ['Prep.2 | حل كتاب الوزارة + المعاصر | Internal Energy and Temperature | Unit 1 - Lesson 3', 'i956RrqiThk'],
+    ['Prep.2 | Methods of Heat Transfer | Unit 1 - Lesson 4', 'CP5UQuK_GL8'],
+    ['Prep.2 | October Revision Booklet 2025', 'svYL3O5qdPA']
+  ]},
+  { name: 'Unit 2: Chemical Reactions & Nutrition', lessons: [
+    ['Prep.2 | Chemical Reactions | Unit 2 - Lesson 1', '_8ylHIzlEhM'],
+    ['Prep.2 | Chemical Equations | Unit 2 - Lesson 2', 'cnX3DcCAKD4'],
+    ['Prep.2 | حل كتاب الوزارة + تمارين المعاصر | Chemical Equations | Unit 2 - Lesson 2', 'mThdWuBRBuU'],
+    ['Prep.2 | Nutritional Chemistry | Unit 2 - Lesson 3', 'Xb6K8-p_i04'],
+    ['Prep.2 | November Revision 2025', 'IWL1B117Tc8']
+  ]},
+  { name: 'Unit 3: Biological Processes', lessons: [
+    ['Prep.2 | Photosynthesis | Unit 3 - Lesson 1', 'frf2drsdFpI'],
+    ['Prep.2 | Cellular Respiration | Unit 3 - Lesson 2', 'vND1Xs4B1bg']
+  ]},
+  { name: 'Unit 4: Earth & Final Revisions', lessons: [
+    ['Prep.2 | Changes in Earth\'s Surface | Unit 4 - Lesson 1', 'OzV7Ax3A874'],
+    ['Prep.2 | Formation of Minerals and Soil | Unit 4 - Lesson 2', 'AznWpdJHCFM'],
+    ['Prep.2 | Final Revision | ليلة الامتحان | Science', 'U40vwYmR6xo']
+  ]}
+];
+
+let currentSubject = 'math';
+let activeUnits = unitsMath;
+let flatLessons = [];
+let currentIdx = 0;
+let completedSet = new Set();
+
+// --- App Initialization ---
+window.addEventListener('DOMContentLoaded', () => {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+
+  checkMobile();
+  window.addEventListener('resize', checkMobile);
+
+  setTimeout(() => {
+    document.getElementById('splash').classList.add('hide');
+    document.getElementById('app').style.display = 'flex';
+  }, 1600);
+});
+
+function checkMobile() {
+  const btn = document.getElementById('mobileMenuBtn');
+  if (window.innerWidth <= 880) {
+    btn.style.display = 'inline-flex';
+  } else {
+    btn.style.display = 'none';
+    document.getElementById('sidebar').classList.remove('mobile-open');
+  }
+}
+
+function toggleTheme() {
+  const d = document.documentElement;
+  const newTheme = d.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+  d.setAttribute('data-theme', newTheme);
+  localStorage.setItem('theme', newTheme);
+}
+
+function toggleMobileSide() {
+  document.getElementById('sidebar').classList.toggle('mobile-open');
+}
+
+// --- Navigation & Core Functions ---
+function openCourse(subject) {
+  currentSubject = subject;
+  activeUnits = (subject === 'math') ? unitsMath : unitsScience;
+
+  flatLessons = [];
+  activeUnits.forEach(u => u.lessons.forEach(l => flatLessons.push(l)));
+
+  document.getElementById('sideCourseTitle').textContent = 
+    'الصف الثاني الإعدادي | ' + (subject === 'math' ? 'Math' : 'Science');
+
+  const savedDone = JSON.parse(localStorage.getItem('completed_' + subject) || '[]');
+  completedSet = new Set(savedDone);
+
+  document.getElementById('home').style.display = 'none';
+  document.getElementById('course').style.display = 'grid';
+
+  renderSidebar();
+  loadLesson(0);
+}
+
+function renderSidebar() {
+  const wrap = document.getElementById('unitsWrap');
+  wrap.innerHTML = '';
+
+  activeUnits.forEach((u, ui) => {
+    const div = document.createElement('div');
+    div.className = 'unit' + (ui === 0 ? ' open' : '');
+
+    const head = document.createElement('div');
+    head.className = 'unit-head';
+    head.innerHTML = `<span>${u.name}</span><span class="chev">+</span>`;
+    head.onclick = () => div.classList.toggle('open');
+    div.appendChild(head);
+
+    const lw = document.createElement('div');
+    lw.className = 'unit-lessons';
+
+    u.lessons.forEach(l => {
+      const idx = flatLessons.indexOf(l);
+      const it = document.createElement('div');
+      it.className = 'lesson-item';
+      it.dataset.idx = idx;
+      it.innerHTML = `<span>${l[0]}</span><span class="num">${idx + 1}</span>`;
+      it.onclick = () => {
+        loadLesson(idx);
+        document.getElementById('sidebar').classList.remove('mobile-open');
+      };
+      lw.appendChild(it);
+    });
+
+    div.appendChild(lw);
+    wrap.appendChild(div);
+  });
+}
+
+function loadLesson(idx) {
+  currentIdx = idx;
+  const [title, yid] = flatLessons[idx];
+
+  document.getElementById('vTitle').textContent = title;
+  document.getElementById('vFrame').src = 'https://www.youtube.com/embed/' + yid + '?rel=0';
+  document.getElementById('summaryText').textContent =
+    'ملخص سريع لهذا الجزء من "' + title + '": الشرح يتضمن شرحاً تفصيلياً وحل تمارين كتاب المعاصر وتدريبات هامة لتثبيت المعلومة.';
+
+  document.querySelectorAll('.lesson-item').forEach(x => {
+    x.classList.toggle('active', +x.dataset.idx === idx);
+  });
+
+  const isDone = completedSet.has(idx);
+  const db = document.getElementById('doneBtn');
+  db.textContent = isDone ? 'تم ✓' : 'تم الإكمال ✓';
+  db.classList.toggle('done', isDone);
+
+  updateProgress();
+
+  document.getElementById('result').textContent = '';
+  document.querySelectorAll('.q-opts input').forEach(i => i.checked = false);
+}
+
+function toggleDone() {
+  if (completedSet.has(currentIdx)) {
+    completedSet.delete(currentIdx);
+  } else {
+    completedSet.add(currentIdx);
+  }
+  localStorage.setItem('completed_' + currentSubject, JSON.stringify([...completedSet]));
+  loadLesson(currentIdx);
+}
+
+function updateProgress() {
+  const pct = Math.round((completedSet.size / flatLessons.length) * 100) || 0;
+  document.getElementById('progBar').style.width = pct + '%';
+  document.getElementById('progPill').textContent = 'COMPLETE ' + pct + '%';
+  document.getElementById('progLabel').textContent = `متبقي ${flatLessons.length - completedSet.size} من أصل ${flatLessons.length}`;
+}
+
+function stepLesson(dir) {
+  let n = currentIdx + dir;
+  if (n >= 0 && n < flatLessons.length) {
+    loadLesson(n);
+  }
+}
+
+function checkAnswers() {
+  const q1 = document.querySelector('input[name="q1"]:checked');
+  const q2 = document.querySelector('input[name="q2"]:checked');
+
+  if (!q1 || !q2) {
+    const res = document.getElementById('result');
+    res.textContent = 'من فضلك جاوب على السؤالين الأول!';
+    res.style.color = '#e53935';
+    return;
+  }
+
+  const res = document.getElementById('result');
+  if (q1.value === 'true' && q2.value === 'true') {
+    res.textContent = '✓ أحسنت! استمر في الإنجاز.';
+    res.style.color = 'var(--green)';
+  } else {
+    res.textContent = '✗ راجع النقاط الصعبة في الفيديو وحاول مرة أخرى!';
+    res.style.color = 'var(--red)';
+  }
+}
+
+function goHome() {
+  document.getElementById('course').style.display = 'none';
+  document.getElementById('home').style.display = 'block';
+  document.getElementById('vFrame').src = '';
+}
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js')
+    .then(() => console.log('PWA Service Worker Registered'))
+    .catch(err => console.log('SW Error:', err));
+}
+</script>
+</body>
+</html>
